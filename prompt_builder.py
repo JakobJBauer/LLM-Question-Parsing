@@ -274,11 +274,11 @@ I now provide you with some examples on how to parse Questions:\n\n"
         }
     ]
 
-    def all_prompts(self, example_amount: int) -> Generator[(str, str, int), None, None]:
+    def all_prompts(self, example_amount: int) -> Generator[(str, int, str, int), None, None]:
         if not 0 < example_amount <= 3:
             raise ValueError("example_amount needs to be between 1 and 3 (inclusive)")
 
-        for q in self.__question_data:
+        for prompt_index, q in enumerate(self.__question_data):
             for difficulty, validation in enumerate(q["validation"]):
                 prompt = self.__prompt_setup
                 for question in self.__question_data:
@@ -290,4 +290,4 @@ I now provide you with some examples on how to parse Questions:\n\n"
                         prompt += answer
                 prompt += "Now provide the output for the following question:\n"
                 prompt += validation
-                yield prompt, q['solution'], difficulty
+                yield prompt, prompt_index, q['solution'], difficulty
