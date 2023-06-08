@@ -1,4 +1,4 @@
-from collections import Generator
+from typing import Iterator, Tuple
 
 
 class PromptBuilder:
@@ -274,7 +274,7 @@ I now provide you with some examples on how to parse Questions:\n\n"
         }
     ]
 
-    def all_prompts(self, example_amount: int) -> Generator[(str, int, str, int), None, None]:
+    def all_prompts(self, example_amount: int) -> Iterator[Tuple[str, int, str, int]]:
         if not 0 < example_amount <= 3:
             raise ValueError("example_amount needs to be between 1 and 3 (inclusive)")
 
