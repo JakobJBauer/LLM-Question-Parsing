@@ -9,4 +9,4 @@ class GPT4AllModel(AbstractModel):
         messages = [{"role": "user", "content": prompt}]
         response = gptj.chat_completion(messages)
         print(f"Response: {response}")
-        return response["message"]["content"].strip()
+        return response["choices"][0]["message"]["content"].strip()
