@@ -17,6 +17,7 @@ class AbstractModel:
 
     def _log_result(self, example_count: int, prompt_index: int, difficulty_index: int, solution: str, response: str):
         self.__logfile.write("; ".join([self._model_name, str(example_count), str(prompt_index), str(difficulty_index), solution, response]) + "\n")
+        self.__logfile.flush()
 
     def _send_prompt(self, prompt) -> str:
         pass
