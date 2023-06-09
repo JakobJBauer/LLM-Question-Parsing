@@ -12,4 +12,4 @@ class Vicuna13bModel(AbstractModel):
             }
         )
         print(f"Response: {' '.join(list(response))}")
-        return " ".join(list(response))
+        return " ".join(list(response)).replace("\n"," ")
