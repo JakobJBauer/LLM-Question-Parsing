@@ -8,7 +8,8 @@ class Vicuna13bModel(AbstractModel):
             "replicate/vicuna-13b:6282abe6a492de4145d7bb601023762212f9ddbbe78278bd6771c8b3b2f2a13b",
             input={
                 "prompt": prompt,
-                "max_length": 5000
+                "max_length": 5000,
+                "temperature": 0.01
             }
         )
         return " ".join(list(response))
