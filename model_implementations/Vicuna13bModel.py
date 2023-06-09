@@ -11,5 +11,6 @@ class Vicuna13bModel(AbstractModel):
                 "max_length": 5000
             }
         )
-        print(f"Response: {' '.join(list(response))}")
-        return " ".join(list(response)).replace("\n"," ")
+        response = ' '.join(list(response)).replace("\n"," ")
+        print(f"Response: {response}")
+        return response
