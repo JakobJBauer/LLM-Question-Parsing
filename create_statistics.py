@@ -41,7 +41,7 @@ def all_files() -> Iterator[str]:
 def latest_files() -> Iterator[str]:
     files = os.listdir(LOGS_PATH)
     for model in MODELS:
-        model_files = [{"version": int(file[len(model):-4]), "file": file} for file in files if file.startswith(model) and "survey" not in file[len(model):]]
+        model_files = [{"version": int(file[len(model):-4]), "file": file} for file in files if file.startswith(model) and file[len(model):].isnumeric()]
         if not model_files:
             print(f"Skipping {model} as no csv was found")
             continue
