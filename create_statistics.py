@@ -52,7 +52,6 @@ def delete_latest():
     if not os.path.exists(stats_path): return
     for f in os.listdir(stats_path):
         os.remove(os.path.join(stats_path, f))
-    os.removedirs(stats_path)
 
 
 def string_to_regex(input: str) -> str:
@@ -101,7 +100,7 @@ def summarize_file(filename: str):
 def run(summarize_all_files: bool = False):
     global stats_path
     if not summarize_all_files:
-        stats_path += "/latest"
+        stats_path = os.path.join(stats_path, "latest")
         delete_latest()
     func = all_files if summarize_all_files else latest_files
     for file in func():
@@ -109,5 +108,4 @@ def run(summarize_all_files: bool = False):
 
 
 if __name__ == "__main__":
-    run(summarize_all_files=True)
     run(summarize_all_files=False)
