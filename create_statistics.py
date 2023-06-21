@@ -3,7 +3,8 @@ import csv
 import re
 import json
 from typing import Iterator
-from itertools import pairwise, chain, tee
+from itertools import chain, tee
+from more_itertools import pairwise
 
 FULL_MATCH = "full_match"
 CONTAINS_SOLUTION = "contains_solution"
@@ -40,7 +41,7 @@ def all_files() -> Iterator[str]:
 def latest_files() -> Iterator[str]:
     files = os.listdir(LOGS_PATH)
     for model in MODELS:
-        model_files = [{"version": int(file[len(model):-4]), "file": file} for file in files if file.startswith(model)]
+        model_files = [{"version": int(file[len(model):-4]), "file": file} for file in files if file.startswith(model) and "survey" not in file[len(model):]]
         if not model_files:
             print(f"Skipping {model} as no csv was found")
             continue
