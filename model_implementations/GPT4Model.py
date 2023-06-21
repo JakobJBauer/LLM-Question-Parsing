@@ -7,10 +7,10 @@ from gpt4_openai import GPT4OpenAI
 
 class GPT4Model(AbstractModel):
     def __init__(self, model_name: str, api_token: str, **kwargs):
-        super().__init__(model_name)
+        super().__init__(model_name, **kwargs)
         self.__time_waited = 0
         self.__prompt_counter = 0
-        self.__model = GPT4OpenAI(token=api_token, model="gpt-4", **kwargs)
+        self.__model = GPT4OpenAI(token=api_token, model="gpt-4")
 
     def _send_prompt(self, prompt) -> str:
         if self.__prompt_counter == 25:
