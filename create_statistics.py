@@ -97,6 +97,27 @@ def summarize_file(filename: str):
             json.dump({k: {"easy": e, "medium": m, "hard": h} for k, (e, m, h) in class_count.items()}, sf, indent=4)
 
 
+def create_collective_summary():
+    DATA_SOURCE = os.path.join("..", "stats", "latest")
+    DATA_DEST = os.path.join("..", "stats", "collection")
+    if not os.path.exists(DATA_SOURCE): print(f"Data source at {DATA_SOURCE} does not exist")
+    if not os.path.exists(DATA_DEST): os.makedirs(DATA_DEST)
+    fileindex = 1
+    while os.path.exists(os.path.join(DATA_DEST, "summary" + str(fileindex) + ".csv")): fileindex += 1
+    with open(os.path.join(DATA_DEST, "summary" + str(fileindex) + ".csv"), "w+") as wf:
+        wf.write("model;dataset;" + ';'.join(CLASSES) + ";" + ';'.join([cl+'_'+dif for cl in CLASSES for dif in ["easy", "medium", "hard"]])+";total_answers\n")
+        for file in os.listdir(DATA_SOURCE):
+            survey = "survey" in file
+            model = [x for x in MODELS if x in file and "survey" not in x][0]
+            with open(os.path.join(DATA_SOURCE, file)) as df:
+                content = json.load(df)
+                collected_classes = [str(sum(content[cl].values())) for cl in CLASSES]
+                detailed_classes = [str(content[cl][dif]) for cl in CLASSES for dif in ["easy", "medium", "hard"]]
+                total_answers = str(sum(map(int,collected_classes)))
+                wf.write(';'.join([model, "human" if survey else "standard", *collected_classes, *detailed_classes, total_answers])+"\n")
+    print("Collected stats successfully")
+
+
 def run(summarize_all_files: bool = False):
     global stats_path
     if not summarize_all_files:
@@ -105,6 +126,7 @@ def run(summarize_all_files: bool = False):
     func = all_files if summarize_all_files else latest_files
     for file in func():
         summarize_file(file)
+    create_collective_summary()
 
 
 if __name__ == "__main__":
