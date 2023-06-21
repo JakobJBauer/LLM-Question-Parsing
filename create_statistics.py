@@ -49,6 +49,7 @@ def latest_files() -> Iterator[str]:
 
 
 def delete_latest():
+    if not os.path.exists(stats_path): return
     for f in os.listdir(stats_path):
         os.remove(os.path.join(stats_path, f))
     os.removedirs(stats_path)
