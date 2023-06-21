@@ -1,7 +1,10 @@
 from typing import Iterator, Tuple
+import json
+import os
 
 
 class PromptBuilder:
+    __FILE_NAME = "graph_related_question_dataset_answers"
     __prompt_setup = "You are now a Question Parser that translates natural language questions into ASP ground truths about different stations.\n\
 Output only the ground truths and nothing else.\n\
 The stations to be selected from are arbitrary.\n\
@@ -274,20 +277,31 @@ I now provide you with some examples on how to parse Questions:\n\n"
         }
     ]
 
-    def all_prompts(self, example_amount: int) -> Iterator[Tuple[str, int, str, int]]:
-        if not 0 < example_amount <= 3:
-            raise ValueError("example_amount needs to be between 1 and 3 (inclusive)")
+    def survey_prompts(self, example_amount: int) -> Iterator[Tuple[str, int, str, int]]:
+        fileindex = 0
+        while os.path.exists(self.__FILE_NAME + str(fileindex+1) + ".json"): fileindex += 1
+        if not fileindex: raise FileNotFoundError("Run survey_extractor first")
 
+        with open(self.__FILE_NAME + str(fileindex) + ".json") as qf:
+            for prompt_index, question_class in enumerate(json.load(qf)):
+                for question in question_class["questions"]:
+                    yield self.__build_preprompt(example_amount) + question, prompt_index, question_class["solution"], 0
+
+    def generated_prompts(self, example_amount: int) -> Iterator[Tuple[str, int, str, int]]:
         for prompt_index, q in enumerate(self.__question_data):
             for difficulty, validation in enumerate(q["validation"]):
-                prompt = self.__prompt_setup
-                for question in self.__question_data:
-                    for i in range(example_amount):
-                        prompt += f"Q: \"{question['examples'][i]['question']}\"\n"
-                        answer = f"A: {question['solution']}\n\n"
-                        for parameter in question["examples"][i]["parameters"]:
-                            answer = answer.replace("{}", f"\"{parameter}\"", 1)
-                        prompt += answer
-                prompt += "Now provide the output for the following question:\n"
-                prompt += validation
-                yield prompt, prompt_index, q['solution'], difficulty
+                yield self.__build_preprompt(example_amount) + validation, prompt_index, q['solution'], difficulty
+
+    def __build_preprompt(self, example_amount):
+        if not 0 < example_amount <= 3:
+            raise ValueError("example_amount needs to be between 1 and 3 (inclusive)")
+        prompt = self.__prompt_setup
+        for question in self.__question_data:
+            for i in range(example_amount):
+                prompt += f"Q: \"{question['examples'][i]['question']}\"\n"
+                answer = f"A: {question['solution']}\n\n"
+                for parameter in question["examples"][i]["parameters"]:
+                    answer = answer.replace("{}", f"\"{parameter}\"", 1)
+                prompt += answer
+        prompt += "Now provide the output for the following question:\n"
+        return prompt

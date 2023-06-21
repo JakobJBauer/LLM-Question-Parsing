@@ -3,10 +3,11 @@ from prompt_builder import PromptBuilder
 
 
 class AbstractModel:
-    def __init__(self, model_name: str, log_path: str = "../logs"):
+    def __init__(self, model_name: str, log_path: str = "../logs", use_survey_data: bool = False):
         self._model_name = model_name
         self.__logfile = None
         self._setup_logfile(log_path)
+        self.__get_prompts = PromptBuilder().survey_prompts if use_survey_data else PromptBuilder.generated_prompts
 
     def _setup_logfile(self, log_path):
         if not os.path.exists(log_path): os.makedirs(log_path)
@@ -29,6 +30,6 @@ class AbstractModel:
 
     def run(self):
         for example_count in range(1, 4):
-            for prompt, prompt_index, solution, difficulty in PromptBuilder().all_prompts(example_count):
+            for prompt, prompt_index, solution, difficulty in self.__get_prompts(example_count):
                 response = self._send_prompt(prompt)
                 self._log_result(example_count, prompt_index, difficulty, solution, response)
