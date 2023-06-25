@@ -20,7 +20,7 @@ class AbstractModel:
         self.__logfile.write("; ".join([self._model_name, str(example_count), str(prompt_index), str(difficulty_index), solution, response]) + "\n")
         self.__logfile.flush()
 
-    def _send_prompt(self, prompt) -> str:
+    def _send_prompt(self, prompt: str) -> str:
         pass
 
     def close_logfile(self):
@@ -28,8 +28,11 @@ class AbstractModel:
             self.__logfile.close()
             self.__logfile = None
 
-    def run(self):
+    def run(self, skip_amount: int = 0):
+        i = 0
         for example_count in range(1, 4):
             for prompt, prompt_index, solution, difficulty in self.__get_prompts(example_count):
-                response = self._send_prompt(prompt)
+                i += 1
+                if i <= skip_amount: continue
+                response = self._send_prompt(prompt).replace((";", ","))
                 self._log_result(example_count, prompt_index, difficulty, solution, response)

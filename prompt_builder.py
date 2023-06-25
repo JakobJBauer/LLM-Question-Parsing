@@ -277,18 +277,20 @@ I now provide you with some examples on how to parse Questions:\n\n"
         }
     ]
 
-    def survey_prompts(self, example_amount: int) -> Iterator[Tuple[str, int, str, int]]:
+    def survey_prompts(self, example_amount: int, skip_amount: int = 0) -> Iterator[Tuple[str, int, str, int]]:
         fileindex = 0
         while os.path.exists(self.__FILE_NAME + str(fileindex+1) + ".json"): fileindex += 1
         if not fileindex: raise FileNotFoundError("Run survey_extractor first")
 
         with open(self.__FILE_NAME + str(fileindex) + ".json") as qf:
             for prompt_index, question_class in enumerate(json.load(qf)):
+                if prompt_index < skip_amount: continue
                 for question in question_class["questions"]:
                     yield self.__build_preprompt(example_amount) + question, prompt_index, question_class["solution"], 0
 
-    def generated_prompts(self, example_amount: int) -> Iterator[Tuple[str, int, str, int]]:
+    def generated_prompts(self, example_amount: int, skip_amount: int = 0) -> Iterator[Tuple[str, int, str, int]]:
         for prompt_index, q in enumerate(self.__question_data):
+            if prompt_index < skip_amount: continue
             for difficulty, validation in enumerate(q["validation"]):
                 yield self.__build_preprompt(example_amount) + validation, prompt_index, q['solution'], difficulty
 
