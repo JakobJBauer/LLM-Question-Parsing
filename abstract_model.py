@@ -34,5 +34,5 @@ class AbstractModel:
             for prompt, prompt_index, solution, difficulty in self.__get_prompts(example_count):
                 i += 1
                 if i <= skip_amount: continue
-                response = self._send_prompt(prompt).replace((";", ","))
+                response = self._send_prompt(prompt).replace(";", ",")
                 self._log_result(example_count, prompt_index, difficulty, solution, response)
