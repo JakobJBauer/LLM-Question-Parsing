@@ -25,9 +25,9 @@ class GPT35Model(AbstractModel):
                     ]
                 )
             except Exception as e:
-                sleep(60*5)
                 failed = True
                 print(f"Exception {e}")
                 print(f"Now waiting 5 min")
+                sleep(60*5)
         print(response["choices"][0]["message"]["content"])
         return response["choices"][0]["message"]["content"]
