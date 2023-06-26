@@ -9,16 +9,25 @@ class GPT35Model(AbstractModel):
         openai.api_key = token
 
     def _send_prompt(self, prompt) -> str:
-        sleep(2) # Rate limits by openai
+        sleep(1)  # Rate limits by openai
         model = "gpt-3.5-turbo"
-        response = openai.ChatCompletion.create(
-            model=model,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-        )
-        print(response)
+        failed = True
+        while failed:
+            failed = False
+            try:
+                response = openai.ChatCompletion.create(
+                    model=model,
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": prompt
+                        }
+                    ]
+                )
+            except Exception as e:
+                sleep(60*5)
+                failed = True
+                print(f"Exception {e}")
+                print(f"Now waiting 5 min")
+        print(response["choices"][0]["message"]["content"])
         return response["choices"][0]["message"]["content"]
